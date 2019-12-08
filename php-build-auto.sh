@@ -92,5 +92,5 @@ fi
 
 export PHP_BUILD_CONFIGURE_OPTS="--with-zlib-dir=$(brew --prefix zlib) --with-bz2=$(brew --prefix bzip2) --with-iconv=$(brew --prefix libiconv) --with-libedit=$(brew --prefix libedit) --with-openssl=$(brew --prefix openssl) --with-libxml-dir=$(brew --prefix libxml2) --with-curl=$(brew --prefix curl) --without-tidy"
 export YACC="$(brew --prefix bison@2.7)/bin/bison"
-export PHP_BUILD_EXTRA_MAKE_ARGUMENTS=-j2
-echo "${BUILD_VERSIONS[@]}" | xargs -n1 -t -P "$PARALLEL" -IVER php-build -i development VER "$INSTALL_ROOT_PATH"/VER/
+export "PHP_BUILD_EXTRA_MAKE_ARGUMENTS=-j$PARALLEL"
+echo "${BUILD_VERSIONS[@]}" | xargs -n1 -t -I@ php-build -i development @ "$INSTALL_ROOT_PATH"/@/
