@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 function usage_exit() {
-  echo "Usage: $0 [OPTIONS]"
+  echo "Usage: $0 [OPTIONS] <version1> [<version2> [...]]"
   echo
   echo "Options:"
   echo "  -h, --help"
-  echo "  --filter stable|minor-head (default: minor-head)"
-  echo "  --oldest-version ver (default: 7.0.0)"
-  echo "  --definition-path path (default: \$HOME/src/github.com/php-build/php-build/share/php-build/definitions/"
   echo "  --parallel num (default: CPU physical core number)"
   echo "  --install-root-path path (default: \$HOME/src/local/php"
   echo "  --override"
@@ -16,14 +13,12 @@ function usage_exit() {
 }
 
 # option defalut
-FILTER="minor-head"
-OLDEST_VERSION="7.0.0"
 PARALLEL=$(sysctl -n hw.physicalcpu_max)
-DEFINITION_PATH="$HOME/src/github.com/php-build/php-build/share/php-build/definitions/"
 INSTALL_ROOT_PATH="$HOME/local/php"
 OVERRIDE=false
 SHOW_VERSIONS=false
 
+param=()
 for OPT in "$@"
 do
   case $OPT in
@@ -31,20 +26,8 @@ do
       usage_exit
       exit 1
       ;;
-    --filter)
-      FILTER=$2
-      shift 2
-      ;;
-    --oldest-version)
-      OLDEST_VERSION=$2
-      shift 2
-      ;;
     --parallel)
       PARALLEL=$2
-      shift 2
-      ;;
-    --definition-path)
-      DEFINITION_PATH=$2
       shift 2
       ;;
     --install-root-path)
@@ -68,21 +51,27 @@ do
   esac
 done
 
-VERSIONS=$(php ./listversion.php --filter "$FILTER" --oldest-version "$OLDEST_VERSION" --definition-path "$DEFINITION_PATH")
-BUILD_VERSIONS=()
+IFS=$'\n'
+for line in $(cat)
+do
+  param+=( "$line" )
+done
 
+BUILD_VERSIONS=()
+SKIP_VERSIONS=()
 if [ $OVERRIDE = true ]; then
-  BUILD_VERSIONS=$VERSIONS
+  BUILD_VERSIONS=$param
 else
-  for VERSION in $VERSIONS ; do
+  for VERSION in "${param[@]}" ; do
     if [ -e "$INSTALL_ROOT_PATH/$VERSION/bin/php" ]; then
-      echo "skip: $VERSION"
+      SKIP_VERSIONS+=($VERSION)
     else
       BUILD_VERSIONS+=($VERSION)
     fi
   done
 fi
-
+echo "skip versions:"
+echo "${SKIP_VERSIONS[@]}"
 echo "build versions:"
 echo "${BUILD_VERSIONS[@]}"
 
