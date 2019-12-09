@@ -22,10 +22,10 @@ class PhpVersion
 $argvOptions = getopt('', ['filter:', 'oldest-version:', 'definitions-path:']);
 $options = [
     'filter' => !empty($argvOptions['filter']) ? $argvOptions['filter'] : 'minor-head',
-    'oldest_version' => !empty($argvOptions['oldest-version']) ? $argvOptions['oldest-version'] : '5.5.0',
+    'oldest_version' => !empty($argvOptions['oldest-version']) ? $argvOptions['oldest-version'] : '7.0.19',
     'definitions_path' => !empty($argvOptions['definitions-path'])
         ? $argvOptions['definitions-path']
-        : getenv('HOME') . "/src/github.com/php-build/php-build/share/php-build/definitions/",
+        : '/usr/local/share/php-build/definitions/',
 ];
 
 $definitionsIter = new DirectoryIterator($options['definitions_path']);
