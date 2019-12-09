@@ -51,11 +51,13 @@ do
   esac
 done
 
-IFS=$'\n'
-for line in $(cat)
-do
-  param+=( "$line" )
-done
+if [ -p /dev/stdin ]; then
+  IFS=$'\n'
+  for line in $(cat -)
+  do
+    param+=( "$line" )
+  done
+fi
 
 BUILD_VERSIONS=()
 SKIP_VERSIONS=()
